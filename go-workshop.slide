@@ -1,0 +1,147 @@
+Go Workshop
+NP Overflow SIG
+
+Ravern Koh
+Tech Head
+@ravernkoh
+ravernkoh@gmail.com
+
+* Agenda
+
+- Introduction
+- Setting up
+- Crash course
+- Standard library
+- Simple web server
+
+* Introduction
+
+* What is Go?
+
+Go is an *open* *source* programming language that makes it easy to build *simple*, *reliable*, and *efficient* software.
+
+.image go-workshop/images/gophers.jpg _ 720
+
+* Who is using Go?
+
+.image go-workshop/images/carousell.png _ 240
+.image go-workshop/images/go-jek.png _ 240
+.image go-workshop/images/sp-digital.png _ 240
+
+* Why use Go?
+
+- Simple
+- Practical
+- Fast
+- Opiniated
+
+* Setting up
+
+* Download and install
+
+Go to [[http://golang.org/dl/]] and download the correct binary/installer.
+
+.image go-workshop/images/downloads.png _ 720
+
+* Understanding GOPATH
+
+Open Command Prompt/Terminal and run the following command:
+
+  go env
+
+Find the location of GOPATH. Its usually one of the following:
+
+- `C:\Users\<username>\go`
+- `/Users/<username>/go`
+
+That is where all your Go-related files will be located. Binaries/Executables go into `bin` and source code goes into `src`.
+
+* Crash course
+
+* What to do
+
+For each of the following examples, if you choose to follow along, create a new directory within the `src` directory of your GOPATH, and create a file called `main.go` within that directory.
+
+For example, when learning about functions, create the following directory structure.
+
+  GOPATH
+  └── src
+      └── functions
+          └── main.go
+
+* Hello, world!
+
+.play go-workshop/hello-world/main.go
+
+A few important things to take note:
+
+- `package` `main`
+- `import` `"fmt"`
+- `func` `main`
+
+* Basic data types
+
+.play go-workshop/basic-data-types/main.go
+
+* Variables
+
+.play go-workshop/variables/main.go
+
+* Functions
+
+.play go-workshop/functions/main.go
+
+* Functions
+
+Functions can also return multiple values.
+
+.play go-workshop/functions-multiple-return-values/main.go
+
+* Packages
+
+Packages are a way of organising Go code. Each *directory* is a single package. All Go files within that folder belong to that package.
+
+Let's create a package called `mypackage`. Your directory structure should look like this.
+
+  GOPATH
+  └── src
+      └── packages
+          ├── main.go
+          └── mypackage
+              └── myfile.go
+
+* Packages
+
+Let's create some functions in `mypackage/myfile.go`.
+
+.code go-workshop/packages/mypackage/myfile.go
+
+Notice the difference in capitalization.
+
+* Packages
+
+Now, let's call the functions from `main.go`.
+
+.play -edit go-workshop/packages/main.go
+
+Notice that only functions that start with captial letters are exported from a package.
+
+* Structs
+
+Used to group multiple fields together.
+
+.play go-workshop/structs/main.go
+
+* Pointers
+
+This is one of the more *difficult* concepts to understand.
+
+.play go-workshop/pointers-reference/main.go
+
+* Pointers
+
+.play go-workshop/pointers-dereference/main.go
+
+* Pointers
+
+.play go-workshop/pointers-mutation/main.go
