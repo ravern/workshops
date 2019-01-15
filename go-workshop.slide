@@ -71,7 +71,7 @@ For example, when learning about functions, create the following directory struc
 
 * Hello, world!
 
-.play go-workshop/hello-world/main.go
+.play -edit go-workshop/hello-world/main.go
 
 A few important things to take note:
 
@@ -81,21 +81,21 @@ A few important things to take note:
 
 * Basic data types
 
-.play go-workshop/basic-data-types/main.go
+.play -edit go-workshop/basic-data-types/main.go
 
 * Variables
 
-.play go-workshop/variables/main.go
+.play -edit go-workshop/variables/main.go
 
 * Functions
 
-.play go-workshop/functions/main.go
+.play -edit go-workshop/functions/main.go
 
 * Functions
 
 Functions can also return multiple values.
 
-.play go-workshop/functions-multiple-return-values/main.go
+.play -edit go-workshop/functions-multiple-return-values/main.go
 
 * Packages
 
@@ -114,7 +114,7 @@ Let's create a package called `mypackage`. Your directory structure should look 
 
 Let's create some functions in `mypackage/myfile.go`.
 
-.code go-workshop/packages/mypackage/myfile.go
+.code -edit go-workshop/packages/mypackage/myfile.go
 
 Notice the difference in capitalization.
 
@@ -122,7 +122,7 @@ Notice the difference in capitalization.
 
 Now, let's call the functions from `main.go`.
 
-.play -edit go-workshop/packages/main.go
+.play -edit -edit go-workshop/packages/main.go
 
 Notice that only functions that start with captial letters are exported from a package.
 
@@ -130,18 +130,18 @@ Notice that only functions that start with captial letters are exported from a p
 
 Used to group multiple fields together.
 
-.play go-workshop/structs/main.go
+.play -edit go-workshop/structs/main.go
 
 * Pointers
 
 This is one of the more *difficult* concepts to understand.
 
-.play go-workshop/pointers-reference/main.go
+.play -edit go-workshop/pointers-reference/main.go
 
 * Pointers
 
-.play go-workshop/pointers-dereference/main.go
+.play -edit go-workshop/pointers-dereference/main.go
 
 * Pointers
 
-.play go-workshop/pointers-mutation/main.go
+.play -edit go-workshop/pointers-mutation/main.go
