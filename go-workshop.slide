@@ -51,8 +51,9 @@ Open Command Prompt/Terminal and run the following command:
 
 Find the location of GOPATH. Its usually one of the following:
 
-- `C:\Users\<username>\go`
-- `/Users/<username>/go`
+- `/Users/<username>/go` (macOS)
+- `/home/<username>/go` (Linux)
+- `C:\Users\<username>\go` (Windows)
 
 That is where all your Go-related files will be located. Binaries/Executables go into `bin` and source code goes into `src`.
 
@@ -132,9 +133,21 @@ Used to group multiple fields together.
 
 .play -edit go-workshop/structs/main.go
 
+* Methods
+
+.code -edit go-workshop/methods/main.go
+
+* Methods
+
+Ravern will now do some live coding!
+
 * Pointers
 
 This is one of the more *difficult* concepts to understand.
+
+Pointers are a concept used across many programming languages. It's pretty useful to learn about them through Go, since in Go they are quite simple.
+
+* Pointers
 
 .play -edit go-workshop/pointers-reference/main.go
 
@@ -145,3 +158,40 @@ This is one of the more *difficult* concepts to understand.
 * Pointers
 
 .play -edit go-workshop/pointers-mutation/main.go
+
+* Pointers
+
+Ravern will now do some live coding!
+
+* Interfaces
+
+Interfaces allow you to define the "shape" of a type.
+
+Let's say we have been tasked to calculate the price of a piece of land. All we need to do is find the area of the land, and multiply that by the price per unit.
+
+* Interfaces
+
+.code -edit go-workshop/interfaces-square/main.go
+
+* Interfaces
+
+.code -edit go-workshop/interfaces-rectangle/main.go
+
+* Interfaces
+
+.code -edit go-workshop/interfaces-circle/main.go
+
+* Interfaces
+
+Do you notice the repetition?
+
+Although the implementations are different, all of these shapes have the `calculateArea` function.
+
+The code in `calculate____Price` function is also repeated; We are just changing the type each time we create a new shape.
+
+What if we could write the `calculatePrice` function only once?
+
+* Interfaces
+
+.code -edit go-workshop/interfaces/main.go
+
