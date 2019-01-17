@@ -139,7 +139,7 @@ Used to group multiple fields together.
 
 * Methods
 
-Ravern will now do some live coding!
+Time for some live coding!
 
 * Pointers
 
@@ -161,7 +161,7 @@ Pointers are a concept used across many programming languages. It's pretty usefu
 
 * Pointers
 
-Ravern will now do some live coding!
+Time for some live coding!
 
 * Interfaces
 
@@ -195,3 +195,16 @@ What if we could write the `calculatePrice` function only once?
 
 .code -edit go-workshop/interfaces/main.go
 
+* Arrays
+
+Arrays are not used very often in Go. Slices are used instead.
+
+.play -edit go-workshop/arrays/main.go
+
+* Slices
+
+.play -edit go-workshop/slices/main.go
+
+* Maps
+
+.play -edit go-workshop/maps/main.go
