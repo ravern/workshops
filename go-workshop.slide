@@ -11,8 +11,7 @@ ravernkoh@gmail.com
 - Introduction
 - Setting up
 - Crash course
-- Standard library
-- Simple web server
+- Build some programs
 
 * Introduction
 
@@ -208,3 +207,36 @@ Arrays are not used very often in Go. Slices are used instead.
 * Maps
 
 .play -edit go-workshop/maps/main.go
+
+* Conditionals
+
+Notice the lack of parentheses around the condition.
+
+.play -edit go-workshop/if-conditional/main.go
+
+* Loops
+
+There are three kinds of `for` loops in Go.
+
+.play -edit go-workshop/for-loops/main.go
+
+* Loops
+
+Go has no `while` loops.
+
+* Build some programs
+
+* Word counter
+
+Create a program that reads a file and counts the number of times each word appears inside the file.
+
+Words are separated by whitespace.
+
+Go to [[http://bit.ly/goworkshop1]] to get the list of words.
+
+* Simple web server
+
+Create a simple web server that greets the user at the following endpoints.
+
+- `/greet` should show "Hello, world!"
+- `/greet?name={name}` should show "Hello, {name}!"
