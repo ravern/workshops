@@ -1,3 +1,3 @@
-# Go Workshop
+# Workshops
 
-Workshop that introduces Go to beginners.
+Collection of slides and materials for the workshops I conduct.
