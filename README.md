@@ -1,3 +1,3 @@
 # Workshops
 
-Collection of slides and materials for the workshops I conduct.
+Collection of slides and materials for my workshops.
