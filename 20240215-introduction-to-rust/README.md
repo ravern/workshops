@@ -8,7 +8,7 @@ class: invert
 **Ravern Koh**
 NUS Hackers
 Hackerschool
-15 February 2024
+7 February 2024
 
 ---
 
@@ -191,6 +191,55 @@ while true && false || true && false {
 
 ---
 
+## Exercise: Beer Song
+
+Let's get Rust to print out the lyrics to the classic song.
+
+```
+99 bottles of beer on the wall, 99 bottles of beer.
+Take one down and pass it around, 98 bottles of beer on the wall.
+
+98 bottles of beer on the wall, 98 bottles of beer.
+Take one down and pass it around, 97 bottles of beer on the wall.
+
+97 bottles of beer on the wall, 97 bottles of beer.
+Take one down and pass it around, 96 bottles of beer on the wall.
+
+...
+
+2 bottles of beer on the wall, 2 bottles of beer.
+Take one down and pass it around, 1 bottle of beer on the wall.
+
+1 bottle of beer on the wall, 1 bottle of beer.
+Take it down and pass it around, no more bottles of beer on the wall.
+
+No more bottles of beer on the wall, no more bottles of beer.
+Go to the store and buy some more, 99 bottles of beer on the wall.
+```
+
+---
+
+## Solution: Beer Song
+
+```rust
+fn main() {
+    for i in (0..100).rev() {
+        verse(i);
+    }
+}
+
+fn verse(n: u32) {
+    match n {
+        0 => println!("No more bottles of beer on the wall, no more bottles of beer.\nGo to the store and buy some more, 99 bottles of beer on the wall.\n"),
+        1 => println!("1 bottle of beer on the wall, 1 bottle of beer.\nTake it down and pass it around, no more bottles of beer on the wall.\n"),
+        2 => println!("2 bottles of beer on the wall, 2 bottles of beer.\nTake one down and pass it around, 1 bottle of beer on the wall.\n"),
+        n => println!("{} bottles of beer on the wall, {} bottles of beer.\nTake one down and pass it around, {} bottles of beer on the wall.\n", n, n, n - 1),
+    }
+}
+```
+
+---
+
 ## Ownership and memory model
 
 * Rust handles memory management in a unique way
@@ -201,17 +250,75 @@ while true && false || true && false {
 
 ---
 
+## Ownership model example: `String`
+
+Let's try this seemingly innocent example.
+
+```rust
+let s1 = "Hello".to_string();
+let s2 = s1;
+
+println!("{}, world!", s1);
+```
+
+---
+
+## Compile error!
+
+```
+error[E0382]: borrow of moved value: `s1`
+ --> src/main.rs:5:28
+  |
+2 |     let s1 = "Hello".to_string();
+  |         -- move occurs because `s1` has type `String`, which does not implement the `Copy` trait
+3 |     let s2 = s1;
+  |              -- value moved here
+4 |
+5 |     println!("{}, world!", s1);
+  |                            ^^ value borrowed here after move
+```
+
+So it seems like `s1` is *moved*, but we're trying to *borrow* it?
+
+---
+
+## Values and variables
+
+We focus here on the distinction between *values* and *variables*.
+
+```rust
+let s1 = "Hello".to_string();
+```
+
+Here, we see that the variable `s1` *owns* the value `"Hello"`.
+
+```rust
+let s2 = s1;
+```
+
+We're not really assigning `s1` to `s2`, we're *moving* the value of `s1` into `s2`.
+
+```rust
+println!("{}, world!", s1);
+```
+
+`println!` wants to use the value `s1`, but it's no longer valid. It has been *moved* into `s2`.
+
+---
+
 ## Rules of ownership
 
 These are lifted from [the book](https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html#ownership-rules).
 
 * Each value in Rust has an *owner*.
 * There can only be **one** owner at a time.
-* When the owner goes out of scope, the value will be *dropped*.
+* When the owner goes *out of scope*, the value will be *dropped*.
 
 ---
 
 ## Variable scope
+
+What does it mean to go *out of scope*?
 
 ```rust
 {                                // open a new scope, s is not valid yet
@@ -225,7 +332,592 @@ These are lifted from [the book](https://doc.rust-lang.org/book/ch04-01-what-is-
 
 ---
 
-## Ownership model example: `String`
+## Are all values moved?
+
+* Some values aren't moved but copied instead.
+* *Most* of the types that start with lowercase letters are copied by default.
+* This compiles, because the value of `n1` is copied into `n2` instead of being moved.
+
+  ```rust
+  let n1: u32 = 324;
+  let n2 = n1;  
+  println!("{}", n1);
+  ```
+
+There is no assignment, there is only *moving* or *copying*.
+
+---
+
+## Ownership and functions
 
 ```rust
+fn foo(baz: String) {
+    println!("I have {}!", baz);
+}
+
+fn main() {
+    let bar = "a pen".to_string();
+    foo(bar);
+
+    println!("I don't have {} :(", bar);
+}
 ```
+
+* The *value* of `bar` is *moved* into the `foo` function call here
+* We can't use the variable `bar` in `main` anymore
+* The new owner of `"a pen"` is the `baz` parameter/variable in `foo`
+
+---
+
+## Moving with return values
+
+You can move values back to the caller by returning them.
+
+```rust
+fn foo(baz: String) -> String {
+    println!("I have {}!", baz);
+    baz
+}
+
+fn main() {
+    let bar = "a pen".to_string();
+    let qux = foo(bar);
+
+    println!("I have {} :)", qux);
+}
+```
+
+---
+
+## References and borrowing
+
+Do I really have to keep passing and returning all my values?
+
+```rust
+fn foo(baz: &String) {
+    println!("I have {}!", baz);
+}
+
+fn main() {
+    let bar = "a pen".to_string();
+    foo(&bar);
+
+    println!("I still have {} :)", bar);
+}
+```
+
+* Here, we borrow the value of `bar` (instead of moving from it) 
+* A reference to the value `"a pen"` is passed into `foo`
+* `&String` means a reference to a string
+* `&bar` means to take a reference of `bar`
+
+---
+
+## Mutation of owned values
+
+Let's talk about mutation.
+
+```rust
+let mut foo = "Hello".to_string();
+foo.push_str(", world!");
+
+println!("{}", foo); // Hello, world!
+```
+
+---
+
+## Mutation of borrowed values
+
+How about when values are borrowed?
+
+```rust
+let foo: String = "Hello".to_string();  // do we need `mut` here?
+let bar: &String = &foo;                // maybe a `mut` here instead?
+bar.push_str(", world!");
+
+println!("{}", foo);
+
+// Compile error! Try to fix this.
+```
+
+---
+
+## Rule of mutation and borrowing
+
+You can either have *multiple immutable borrows*, or *one mutable borrow*.
+
+Let's test this out!
+
+```rust
+let mut the_string: String = "Hello".to_string();
+let foo: &String = &the_string;         // this is fine
+let bar: &String = &the_string;         // this is fine too
+let baz: &mut String = &mut the_string; // this is fine too...?
+let qux: &String = &the_string;         // this is also fine???
+```
+
+Oops! The Rust compiler is really too smart for us. What do you think is happening here?
+
+---
+
+## Rule of mutation and borrowing
+
+Let's try again.
+
+```rust
+let mut the_string: String = "Hello".to_string();
+let foo: &String = &the_string;         // this is fine
+let bar: &String = &the_string;         // this is fine too
+let baz: &mut String = &mut the_string; // Compile error!
+
+println!("{}", foo);
+println!("{}", bar);
+println!("{}", baz);
+```
+
+---
+
+## Exercise: Fix the bugs!
+
+Fix the bugs by changing the way we handle value e.g. owned value, reference or mutable reference.
+
+```rust
+fn main() {
+    let data = "Rust is great!".to_string();
+    display_to_user(data);
+    add_cheer(&data);
+    let uppercase_data = convert_to_uppercase(&data);
+    println!("Final form: {}", uppercase_data);
+}
+
+fn display_to_user(data: String) {
+    println!("Current form: {}", data);
+}
+
+fn add_cheer(data: &String) {
+    data.push_str(" And so are you!");
+}
+
+fn convert_to_uppercase(data: &String) -> &String {
+    &data.to_uppercase()
+}
+```
+
+---
+
+## Solution: Fix the bugs!
+
+```rust
+fn main() {
+    let mut data = "Rust is great!".to_string();     // Added a `mut` here
+    display_to_user(&data);                          // Borrow immutably
+    add_cheer(&mut data);                            // Borrow mutably
+    let uppercase_data = convert_to_uppercase(data); // Move and return
+    println!("Final form: {}", uppercase_data);
+}
+
+// Take in an immutable reference
+fn display_to_user(data: &String) {
+    println!("Current form: {}", data);
+}
+
+// Take in a mutable reference
+fn add_cheer(data: &mut String) {
+    data.push_str(" And so are you!");
+}
+
+// Take in an owned `String`
+fn convert_to_uppercase(data: String) -> String {
+    data.to_uppercase()
+}
+```
+
+---
+
+# Let's take a break.
+
+Feel free to ask me some questions!
+
+---
+
+## Composing data in Rust
+
+We're now ready to introduce more complex data structures!
+
+* Structs (product types)
+* Enums (sum types)
+* `Option` and `Result`
+* Traits and polymorphism
+
+---
+
+## Grouping data with structs
+
+```rust
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+fn main() {
+    let rectangle = Rectangle {
+        width: 100,
+        height: 50,
+    };
+
+    println!("width: {}, height: {}", rectangle.width, rectangle.height);
+
+    // Can we print out the whole `Rectangle` at once?
+    // e.g. println!("rectangle: {}", rectangle);
+}
+```
+
+---
+
+## Ownership model with structs
+
+```rust
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+fn expand_width(rectangle: &mut Rectangle) {
+    rectangle.width += 50;
+}
+
+fn main() {
+    let mut rectangle = Rectangle {
+        width: 100,
+        height: 50,
+    };
+
+    expand_width(&mut rectangle);
+}
+```
+
+---
+
+## Methods on structs
+
+```rust
+impl Rectangle {
+    // This is called an "associated function"
+    fn new(width: u32, height: u32) -> Rectangle {
+        Rectangle {
+            width,
+            height,
+        }
+    }
+
+    // This is your regular old method
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+
+    // This is also a method, notice `&mut self`
+    fn expand_width(&mut self) {
+        self.width += 50;
+    }
+}
+
+fn main() {
+    let mut rectangle = Rectangle::new(100, 50);
+    println!("area: {}", rectangle.area());
+    rectangle.expand_width();
+    println!("expanded area: {}", Rectangle::area(&rectangle)); // same thing
+}
+```
+
+---
+
+## Different way of grouping data with enums
+
+```rust
+enum Color {
+    Red,
+    Green,
+    Blue,
+    Yellow,
+}
+
+fn main() {
+    let red = Color::Red;
+    let green = Color::Green;
+    let blue = Color::Blue;
+    let yellow = Color::Yellow;
+}
+```
+
+---
+
+## Enums can store data
+
+```rust
+enum Message {
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+    Quit,
+}
+
+fn send_message(message: Message) {
+    // Send it off to the stars...
+}
+
+fn main() {
+    let move_up = Message::Move { x: 0, y: -32 };
+    send_message(move_up);
+
+    let write = Message::Write("I call upon you!".to_string());
+    send_message(write);
+
+    let change_color = Message::ChangeColor(42, 32, 45);
+    send_message(change_color);
+
+    let quit = Message::Quit;
+    send_message(quit);
+}
+```
+
+---
+
+## Getting data out of an enum
+
+Let's re-use `send_message` from earlier
+
+```rust
+enum Message {
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+    Quit,
+}
+
+fn send_message(message: Message) {
+    // We can use an `if let` expression
+    if let Message::Write(text) = &message { // why do we need `&` here?
+        println!("The message is: {}", text);
+    }
+
+    // Or a `match` expression
+    match message {
+        Message::Move { x, y } => println!("Position moved to x: {}, y: {}.", x, y),
+        Message::Write(_) => println!("Message written."),
+        Message::ChangeColor(_, _, _) => println!("Color changed."),
+        Message::Quit => println!("BYE BYE."),
+    }
+}
+```
+
+---
+
+## Methods on enums
+
+```rust
+impl Message {
+    fn send(&self) {
+        match self {
+            Message::Move { x, y } => println!("Position moved to x: {}, y: {}.", x, y),
+            Message::Write(_) => println!("Message written."),
+            Message::ChangeColor(_, _, _) => println!("Color changed."),
+            Message::Quit => println!("BYE BYE."),
+        }
+    }
+}
+
+fn main() {
+    let move_up = Message::Move { x: 0, y: -32 };
+    move_up.send();
+
+    let write = Message::Write("I call upon you!".to_string());
+    write.send();
+
+    let change_color = Message::ChangeColor(42, 32, 45);
+    change_color.send();
+
+    let quit = Message::Quit;
+    quit.send();
+}
+```
+
+---
+
+## Generic types
+
+* Sometimes, we have types that are *parameterized* by other types
+* Like when you say "array" in Java, the reply would be "well, array of what?"
+
+  ```rust
+  // THIS DOESN'T COMPILE, JUST AN EXAMPLE
+
+  struct Array<T> {
+    // some stuff inside
+  }
+
+  fn main() {
+    let array_of_ints: Array<u32> = Array::new();
+    let array_of_strings: Array<String> = Array::new();
+    let array_of_arrays_of_ints: Array<Array<u32>> = Array::new();
+  }
+  ```
+
+---
+
+## `Option`
+
+* Rust has no `null` or `nil`, so you'll never face that dreaded `NullPointerException` (it has no exceptions either)
+* That means you, the programmer, has to handle all possible cases of "emptiness" explictly
+* We use the `Option` enum for that
+
+  ```rust
+  enum Option<T> {
+      Some(T),
+      None,
+  }
+  ```
+
+* So here, we say you either have `Some`thing, or `None` at all
+
+---
+
+## Using `Option`
+
+```rust
+struct Error {
+    message: Option<String>,
+    line: u32,
+}
+
+fn main() {
+    let compile_error_with_message = Error {
+        message: Some("You forgot your semicolon, noob.".to_string()),
+        line: 32,
+    };
+
+    let compile_error_no_message = Error {
+        message: None,
+        line: 35,
+    };
+
+    let compile_error_numerical_message = Error {
+        message: Some(524), // Compile error!
+        line: 35,
+    };
+}
+```
+
+---
+
+## `Result`
+
+* Remember how Rust doesn't have exceptions? Well what if an operation fails e.g. a file isn't found in the filesystem
+* For that, we have `Result`
+
+  ```rust
+  enum Result<T, E> {
+    Ok(T),
+    Err(E),
+  }
+  ```
+
+---
+
+## Using `Result`
+
+```rust
+// If we can divide by 5, return `Ok` with the answer, otherwise return
+// an `Err` with the remainder.
+fn divide_by_5(n: u32) -> Result<u32, u32> {
+    if n % 5 == 0 {
+        Ok(n / 5)
+    } else {
+        Err(n % 5)
+    }
+}
+
+fn main() {
+    let result = divide_by_5(32);
+    match result {
+        Ok(answer) => println!("Success! The answer is {}.", answer),
+        Err(remainder) => println!("Failure. The remainder is {}.", remainder),
+    }
+}
+```
+
+---
+
+## Traits and polymorphism
+
+* Traits are like the `interface` (Java, TypeScript) or `protocol` (Swift) of Rust
+* You use them to group common behaviour between different types
+* For example, you'd say that both arrays and linked lists are `Iterator`s (a commonly used Rust trait)
+* They are instrumental for polymorphism in Rust
+
+---
+
+## Defining a trait
+
+```rust
+trait Walk {
+    // Returns the new position.
+    fn walk(&self, position: u32) -> u32;
+}
+```
+
+---
+
+## Implementing a trait
+
+```rust
+struct Person {
+    speed: u32,
+}
+
+impl Walk for Person {
+    fn walk(&self, position: u32) -> u32 {
+        position + self.speed
+    }
+}
+
+struct Animal {
+    is_facing_forward: bool,
+}
+
+impl Walk for Animal {
+    fn walk(&self, position: u32) -> u32 {
+        if self.is_facing_forward {
+            position + 5
+        } else {
+            position - 5
+        }
+    }
+}
+```
+
+---
+
+## Using a trait
+
+```rust
+fn perform_walk<T: Walk>(walker: T, position: u32) -> u32 {
+    walker.walk(position)
+}
+
+fn main() {
+    let slow_person = Person { speed: 20 };
+    perform_walk(slow_person, 32);
+    let fast_person = Person { speed: 55 };
+    perform_walk(fast_person, 32);
+    let animal = Animal { is_facing_forward: false };
+    perform_walk(animal, 32);
+}
+```
+
+---
+
+## Final exercise: Tic-Tac-Toe
+
+---
+
+## Thank you for coming!
