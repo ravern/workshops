@@ -916,7 +916,249 @@ fn main() {
 
 ---
 
-## Final exercise: Tic-Tac-Toe
+## Exercise: Tic-Tac-Toe
+
+```rust
+enum Player {
+    // TODO
+}
+
+enum Cell {
+    // TODO
+}
+
+struct Board {
+    cells: [[Cell; 3]; 3],
+}
+
+impl Board {
+    fn empty() -> Board {
+        Board {
+            cells: [
+                [Cell::Empty, Cell::Empty, Cell::Empty],
+                [Cell::Empty, Cell::Empty, Cell::Empty],
+                [Cell::Empty, Cell::Empty, Cell::Empty],
+            ],
+        }
+    }
+
+    fn cell(&self, col: usize, row: usize) -> &Cell {
+        &self.cells[row][col]
+    }
+
+    fn place(/* TODO */) {
+        // TODO
+    }
+}
+
+// ---------------------------------------------------------------
+
+trait Line: Sized {
+    fn cells(self, board: &Board) -> (&Cell, &Cell, &Cell);
+}
+
+fn check_line_winner</* TODO */>(/* TODO */) -> Option<Player> {
+    // TODO
+}
+
+struct Row {
+    row: usize,
+}
+
+impl Line for Row {
+    fn cells(self, board: &Board) -> (&Cell, &Cell, &Cell) {
+        (
+            board.cell(self.row, 0),
+            board.cell(self.row, 1),
+            board.cell(self.row, 2),
+        )
+    }
+}
+
+struct Col {
+    // TODO
+}
+
+impl Line for Col {
+    // TODO
+}
+
+enum Diag {
+    TopLeftToBottomRight,
+    BottomLeftToTopRight,
+}
+
+impl Line for Diag {
+    // TODO
+}
+
+// --------------------------------------------------------------
+
+fn check_winner(board: &Board) -> Option<Player> {
+    // TODO
+}
+
+fn main() {
+    let mut board = Board::empty();
+  
+    board.place(1, 1, Player::X);
+    board.place(0, 1, Player::O);
+    board.place(0, 0, Player::X);
+    board.place(2, 2, Player::O);
+    board.place(1, 0, Player::X);
+    board.place(1, 2, Player::O);
+    board.place(2, 0, Player::X);
+  
+    match check_winner(&board) {
+        Some(Player::X) => println!("Player X has won!"),
+        Some(Player::O) => println!("Player O has won!"),
+        None => println!("No one has won yet."),
+    }
+}
+```
+
+---
+
+## Solution: Tic-Tac-Toe
+
+```rust
+enum Player {
+    O,
+    X,
+}
+
+enum Cell {
+    Empty,
+    Occupied(Player),
+}
+
+struct Board {
+    cells: [[Cell; 3]; 3],
+}
+
+impl Board {
+    fn empty() -> Board {
+        Board {
+            cells: [
+                [Cell::Empty, Cell::Empty, Cell::Empty],
+                [Cell::Empty, Cell::Empty, Cell::Empty],
+                [Cell::Empty, Cell::Empty, Cell::Empty],
+            ],
+        }
+    }
+
+    fn cell(&self, col: usize, row: usize) -> &Cell {
+        &self.cells[row][col]
+    }
+
+    fn place(&mut self, col: usize, row: usize, player: Player) {
+        self.cells[row][col] = Cell::Occupied(player);
+    }
+}
+
+// ---------------------------------------------------------------
+
+trait Line: Sized {
+    fn cells(self, board: &Board) -> (&Cell, &Cell, &Cell);
+}
+
+fn check_line_winner<T: Line>(line: T, board: &Board) -> Option<Player> {
+    let cells = line.cells(board);
+    match cells {
+        (Cell::Occupied(Player::X), Cell::Occupied(Player::X), Cell::Occupied(Player::X)) => {
+            Some(Player::X)
+        }
+        (Cell::Occupied(Player::O), Cell::Occupied(Player::O), Cell::Occupied(Player::O)) => {
+            Some(Player::O)
+        }
+        _ => None,
+    }
+}
+
+struct Row {
+    row: usize,
+}
+
+impl Line for Row {
+    fn cells(self, board: &Board) -> (&Cell, &Cell, &Cell) {
+        (
+            board.cell(self.row, 0),
+            board.cell(self.row, 1),
+            board.cell(self.row, 2),
+        )
+    }
+}
+
+struct Col {
+    col: usize,
+}
+
+impl Line for Col {
+    fn cells(self, board: &Board) -> (&Cell, &Cell, &Cell) {
+        (
+            board.cell(0, self.col),
+            board.cell(1, self.col),
+            board.cell(2, self.col),
+        )
+    }
+}
+
+enum Diag {
+    TopLeftToBottomRight,
+    BottomLeftToTopRight,
+}
+
+impl Line for Diag {
+    fn cells(self, board: &Board) -> (&Cell, &Cell, &Cell) {
+        match self {
+            Diag::TopLeftToBottomRight => (board.cell(0, 0), board.cell(1, 1), board.cell(2, 2)),
+            Diag::BottomLeftToTopRight => (board.cell(0, 2), board.cell(1, 1), board.cell(2, 0)),
+        }
+    }
+}
+
+// --------------------------------------------------------------
+
+fn check_winner(board: &Board) -> Option<Player> {
+    for row in 0..3 {
+        let row = Row { row };
+        if let Some(winner) = check_line_winner(row, board) {
+            return Some(winner);
+        }
+    }
+    for col in 0..3 {
+        let col = Col { col };
+        if let Some(winner) = check_line_winner(col, board) {
+            return Some(winner);
+        }
+    }
+    if let Some(winner) = check_line_winner(Diag::TopLeftToBottomRight, board) {
+        return Some(winner);
+    }
+    if let Some(winner) = check_line_winner(Diag::BottomLeftToTopRight, board) {
+        return Some(winner);
+    }
+    None
+}
+
+fn main() {
+    let mut board = Board::empty();
+  
+    board.place(1, 1, Player::X);
+    board.place(0, 1, Player::O);
+    board.place(0, 0, Player::X);
+    board.place(2, 2, Player::O);
+    board.place(1, 0, Player::X);
+    board.place(1, 2, Player::O);
+    board.place(2, 0, Player::X);
+  
+    match check_winner(&board) {
+        Some(Player::X) => println!("Player X has won!"),
+        Some(Player::O) => println!("Player O has won!"),
+        None => println!("No one has won yet."),
+    }
+}
+```
 
 ---
 
