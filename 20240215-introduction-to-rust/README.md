@@ -1,6 +1,5 @@
 ---
 marp: true
-class: invert
 ---
 
 # **Introduction to Rust**
@@ -18,7 +17,7 @@ Hackerschool
 
 * Year 2 studying Computer Science
 * Enjoys webdev and proglangs
-* Been writing Rust on/off for ~4 years
+* Been writing Rust for fun for a while
 
 ---
 
@@ -49,8 +48,7 @@ _Lifted shamlessly off the [Rust website](https://www.rust-lang.org/)_
 * Composing data with structs
 * Composing more data with enums, pattern matching
 * "Null" and error handling
-* Polymorphism with traits (somewhat)
-* Crates and modules
+* (Basic) polymorphism with traits
 
 ---
 
@@ -58,7 +56,8 @@ _Lifted shamlessly off the [Rust website](https://www.rust-lang.org/)_
 
 _If I discover we have enough time, we'll cover them in order until we run out of time._
 
-* Generics, more traits and lifetimes
+* Crates and modules
+* More generics, traits and lifetimes
 * Iterators and closures, functional programming techniques
 * Smart pointers
 * Threading and synchronisation
@@ -303,6 +302,15 @@ println!("{}, world!", s1);
 ```
 
 `println!` wants to use the value `s1`, but it's no longer valid. It has been *moved* into `s2`.
+
+---
+
+## Interlude on why ownership is useful
+
+There are **two** classes of bugs in traditional systems programming that we're trying to solve here.
+
+1. Memory management: Use-after-free and double free
+2. Unknowing mutation (I can't find a good name for this)
 
 ---
 
@@ -743,7 +751,7 @@ fn main() {
 
 ---
 
-## Generic types
+## Brief foray into generics
 
 * Sometimes, we have types that are *parameterized* by other types
 * Like when you say "array" in Java, the reply would be "well, array of what?"
@@ -1163,3 +1171,7 @@ fn main() {
 ---
 
 ## Thank you for coming!
+
+Please submit our feedback form.
+
+![Feedback Form QR code](./images/feedback.png)
