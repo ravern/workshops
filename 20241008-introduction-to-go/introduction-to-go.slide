@@ -1,0 +1,694 @@
+# Introduction to Go
+Hackers Toolbox
+8 Oct 2024
+
+Ravern Koh
+NUS Hackers
+ravern@nushackers.org
+@ravernkoh
+
+## Hello, world!
+
+Welcome to **Introduction to Go**.
+
+By the end of this workshop, you should be able to write your own simple Go programs with confidence.
+
+We assume that you have basic programming knowledge, like some understanding of Python for example, but not much beyond that.
+
+
+## whoami
+
+- I'm Ravern!
+- Year 3 Computer Science student
+- Interested in web development and programming languages
+- Learned Go ~4 years ago
+
+_I'm **not** an expert in Go, I'm here to teach the basics of Go. Feel free to stop me if I'm saying incorrect stuff._
+
+
+## Background
+
+.image images/gopher.png _ 100
+
+- Designed at Google in 2009 (it's like old-new) by Robert Griesemer, Rob Pike, and Ken Thompson
+- Statically-typed, garbage collected, memory-safe
+- Compiles to binary executable, with strong support for cross compilation
+
+## Why Go?
+
+- It is _really_ simple to learn
+- It provides both safety and speed
+- It has built-in support for concurrency
+- It has _fantastic_ tooling
+
+## Who's using Go?
+
+Pretty much everyone.
+
+.image images/companies.png 320 _
+
+It's also often used to build infrastructure tooling like **Docker** and **Kubernetes**.
+
+## Basics of Go
+
+## Variables
+
+    var anInt int = 42
+    aFloat := 3.14
+
+    var anotherInt, yetAnotherInt int = 1, 2
+	var (
+		anotherFloat float64 = 4.321
+		yetAnotherFloat float64 = 1.234
+	)
+
+Notice that we have to declare the _type_ of each variable, e.g., `int`, `float64`.
+
+## Primitive Data
+
+    var aBool bool = true
+    var anUnsignedInt uint = 42
+    var anInt int = -42
+    var aFloat float64 = 3.14
+    var aComplex complex64 = complex(2, 3)
+    var aString string = "This is a string!"
+
+What happens if I just do this?
+
+    var aBool bool
+    var anInt int
+
+## Functions
+
+    func foo() {
+        bar(32, "one", "two")
+    }
+
+    func bar(aParam int, anotherParam, yetAnotherParam string) {
+        // Do something...
+    }
+
+    func baz() (string, string) {
+        return "foo", "bar"
+    }
+
+Notice that there isn't a type definition for `anotherParam`.
+
+## Packages
+
+    my_project
+        ├── server.go
+        ├── config.go
+        ├── main.go
+        ├── db
+        │   ├── models.go
+        │   └── connection.go
+        └── auth
+            ├── jwt.go
+            ├── auth.go
+            └── decrypt.go
+
+- Go code is written in .go files
+- These files are grouped into directories
+- A directory is a Go package (all files have to declare the same package name)
+
+## Hello, world
+
+    package main
+
+    import "fmt"
+
+    func main() {
+        fmt.Println("Hello, World!")
+    }
+
+## Loops
+
+Go only has the `for` loop, but it has different kinds.
+
+There's the Java-style for loop.
+
+    for i := 0; i < 10; i++ {
+		fmt.Printf("for loop iteration: %d\n", i)
+	}
+
+And also the for-loop-that-should-really-be-a-while-loop.
+
+    j := 0
+	for j < 10 {
+		fmt.Printf("while loop iteration: %d\n", j)
+		j++
+	}
+
+## Loops
+
+There's also the infinite for loop. Usually you'd have a `break` somewhere in the loop in order to stop it.
+
+    k := 0
+	for {
+		fmt.Printf("infinite loop iteration: %d\n", k)
+		k++
+	}
+
+## Conditionals
+
+For conditionals, we have the `if` and `switch` statements.
+
+The if statement looks pretty normal.
+
+	if x > 5 {
+		fmt.Println("x is greater than 5")
+	} else {
+		fmt.Println("x is less than or equal to 5")
+	}
+
+We can also initialize a variable before the condition!
+
+    if y := 1; y > 0 {
+		fmt.Println("y is positive")
+	} else {
+		fmt.Println("y is non-positive")
+	}
+
+## Conditionals
+
+We also have the switch statement.
+
+    switch x {
+	case 1:
+		fmt.Println("x is just 1")
+	case 2, 3, 4:
+		fmt.Println("x must be 2, 3, or 4")
+		fallthrough
+	case 5, 6, 7:
+		fmt.Println("x must be between 2 and 7 (inclusive)")
+	}
+
+Notice how that the cases don't fall through by default, unlike in C or Java. Instead, we have to explicitly tell it to `fallthrough`.
+
+## Conditionals
+
+You can also have switch statements without a condition. It's equivalent to a long chain of if-else statements.
+
+    switch {
+	case x < 5:
+        fmt.Println("x is smaller than 5")
+	case x == 5:
+        fmt.Println("x is 5")
+	case x > 5:
+        fmt.Println("x is greater than 5")
+	}
+
+## Pointers
+
+Go has pointers.
+
+Pointers store the location of the underlying value, e.g., an int pointer (`*int`) stores the location of an integer in memory.
+
+	var x, y int = 10, 20
+	fmt.Println("x =", x)
+	fmt.Println("y =", y)
+
+	var ptr *int = &x
+	fmt.Println("ptr =", ptr)
+	fmt.Println("*ptr =", *ptr)
+
+	*ptr = 30
+	fmt.Println("ptr =", ptr)
+	fmt.Println("*ptr =", *ptr)
+
+	ptr = &y
+	fmt.Println("ptr =", ptr)
+	fmt.Println("*ptr =", *ptr)
+
+## Pointers
+
+Passing pointers to functions allows you to modify the underlying variable.
+
+    func setToHundred(x int) {
+        x = 100
+    }
+    
+    func setToHundredWithPtr(x *int) {
+        *x = 100
+    }
+
+    func main() {
+        x := 10
+
+        setToHundred(x)
+        fmt.Println("x =", x)
+
+        setToHundredWithPtr(&x)
+        fmt.Println("x =", x)
+    }
+
+## Pointers
+
+The zero value for pointers is `nil`.
+
+    var x *int
+    fmt.Println(x)
+
+What happens when you try to modify a pointer whose value is `nil`?
+
+## Arrays
+
+Arrays are a collection of items that have a **fixed-size**.
+
+	var anIntArray [5]int = [5]int{1, 2, 3, 4, 5}
+	var aBoolArray [5]bool = [5]bool{true, false, true, false, true}
+	var aStringArray [5]string = [5]string{"a", "b", "c", "d", "e"}
+
+	fmt.Println("anIntArray =", anIntArray)
+	fmt.Println("aBoolArray =", aBoolArray)
+	fmt.Println("aStringArray =", aStringArray)
+
+## Slices
+
+Slices are a collection of items that have a no fixed size. They can be dynamically resized.
+
+	anArray := [7]int{1, 2, 3, 4, 5, 6, 7}
+
+	var aSlice []int = anArray[1:5]
+	fmt.Println("aSlice =", aSlice)
+
+	anotherSlice := anArray[2:6]
+	fmt.Println("anotherSlice =", anotherSlice)
+
+	anImmediateSlice := []int{1, 2, 3, 4, 5}
+	fmt.Println("anImmediateSlice =", anImmediateSlice)
+
+## Slices
+
+Since slices are dynamically sized, we can append to them. `append` does **not** modify the given slice but instead returns a new one.
+
+	aSlice := []int{1, 2, 3, 4, 5}
+	aSlice = append(aSlice, 6)
+
+	anotherSlice := append(aSlice, 7)
+
+	fmt.Println("aSlice =", aSlice)
+	fmt.Println("anotherSlice =", anotherSlice)
+
+## Slices
+
+To make an empty slice, use `make` function.
+
+	aSlice := make([]int, 10, 500)
+	fmt.Println("aSlice =", aSlice)
+
+What's that second parameter (`500`) for?
+
+## Slices
+
+There is yet another type of for loop that can more easily loop through slices. This is the **for-range** loop.
+
+    aSlice := []int{6, 7, 8, 9, 10}
+
+    for i := range aSlice {
+        fmt.Println("The index is", i)
+    }
+
+    for i, item := range aSlice {
+        fmt.Println("The index is", i, "and the item is", item)
+    }
+
+## Maps
+
+Maps store key-value pairs, in order to map keys to values.
+
+	var aMap map[string]int = map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+	}
+
+	fmt.Println("aMap =", aMap)
+
+	fmt.Println("aMap[\"one\"] =", aMap["one"])
+	fmt.Println("aMap[\"two\"] =", aMap["two"])
+	fmt.Println("aMap[\"three\"] = aMap["three"])
+
+## Maps
+
+We can check if keys exist in a map by getting a `bool` as a second return value.
+
+	aMap := map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+	}
+
+	three, ok := aMap["three"]
+	fmt.Println("aMap[\"three\"] =", three, ok)
+
+	four, ok := aMap["four"]
+	fmt.Println("aMap[\"four\"] =", four, ok)
+
+## Maps
+
+You can use `delete` to remove key-value pairs from maps.
+
+	aMap := map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+	}
+
+	delete(aMap, "three")
+
+	three, ok := aMap["three"]
+	fmt.Println("aMap[\"three\"] =", three, ok)
+
+## Maps
+
+Similar to slices, use the `make` function to create an empty map.
+
+	aMap := make(map[string]int)
+	aMap["one"] = 1
+	aMap["two"] = 2
+	aMap["three"] = 3
+
+	fmt.Println("aMap =", aMap)
+
+## Maps
+
+You can also use the range-based for loop with maps.
+
+    aMap := map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+	}
+
+    for key := range aMap {
+        fmt.Println("The key is", key)
+    }
+
+    for key, value := range aMap {
+        fmt.Println("The key is", key, "and the value is", value)
+    }
+
+## Exercise
+
+Let's write a program that counts the number of times each word in `words` appears in `passage`, and prints the counts to the console.
+
+_Hint: Check out the `strings.Fields` function._
+
+## Data Composition in Go
+
+## Structs
+
+We can use structs to group related pieces of data.
+
+    type person struct {
+        firstName string
+        lastName  string
+        age       int
+    }
+
+    func main() {
+        var p person = person{
+            firstName: "John",
+            lastName:  "Doe",
+            age:       30,
+        }
+
+        fmt.Println(p)
+    }
+
+## Structs
+
+Structs can have methods, which act on the struct and can be called with the struct as the receiver.
+
+    func (p person) fullName() string {
+        return p.firstName + " " + p.lastName
+    }
+
+    func main() {
+        var p person = person{
+            firstName: "Jane",
+            lastName:  "Doe",
+            age:       30,
+        }
+
+        fmt.Println(p.fullName())
+    }
+
+## Structs
+
+Structs are copied. This means that modifying them won't work by default.
+
+    func (p person) growOlder(years int) {
+        p.age += years
+    }
+
+    func changeFirstName(p person, newFirstName string) {
+        p.firstName = newFirstName
+    }
+
+    func main() {
+        var p person = person{
+            firstName: "Jane",
+            lastName:  "Doe",
+            age:       30,
+        }
+
+        p.growOlder(1)
+        changeFirstName(p, "John")
+
+        fmt.Println(p.fullName(), "is", p.age, "years old")
+    }
+
+## Structs
+
+How do we modify them then? We can use **pointers**.
+
+    func (p *person) growOlder(years int) {
+        p.age += years
+    }
+
+    func changeFirstName(p *person, newFirstName string) {
+        p.firstName = newFirstName
+    }
+
+    func main() {
+        var p person = person{
+            firstName: "Jane",
+            lastName:  "Doe",
+            age:       30,
+        }
+
+        p.growOlder(1)
+        changeFirstName(&p, "John")
+
+        fmt.Println(p.fullName(), "is", p.age, "years old")
+    }
+
+## Interfaces
+
+We can use interfaces to group related pieces of behaviour.
+
+This interface defines a behaviour that any data that has the `area` and `perimeter` methods is a `shape`.
+
+    type shape interface {
+        perimeter() int
+        area() int
+    }
+
+## Interfaces
+
+We can then define structs that implement this behaviour.
+
+Here's a square.
+
+    type square struct {
+        size int
+    }
+
+    func (s square) perimeter() int {
+        return s.size * 4
+    }
+
+    func (s square) area() int {
+        return s.size * s.size
+    }
+
+## Interfaces
+
+And here's a rectangle.
+
+    type rect struct {
+        length int
+        breadth int
+    }
+
+    func (r rect) perimeter() int {
+        return (r.length + r.breadth) * 2
+    }
+
+    func (r rect) area() int {
+        return r.length * r.breadth
+    }
+
+## Interfaces
+
+We can define a function that acts on a `shape` (and not specifically on a `square` or `rect`).
+
+    func printShape(s shape) {
+        fmt.Println("The area of the shape is", s.area(), "and the perimeter is", s.perimeter())
+    }
+
+    func main() {
+        s := square{size: 10}
+        r := rect{length: 5, breadth: 10}
+
+        printShape(s)
+        printShape(r)
+    }
+
+## Interfaces
+
+How do we know what's the concrete type (i.e., square, circle) stored inside the interface (i.e., shape)?
+
+We can perform a **type switch**.
+
+    switch s.(type) {
+    case square:
+        fmt.Println("s is a square")
+    case rect:
+        fmt.Println("s is a rect")
+    }
+
+## Interfaces
+
+If we already know the concrete type, and we want to _get_ a variable of that type, we can perform a **type assertion**.
+
+    thisIsASquare, ok := s.(square)
+	if ok {
+		fmt.Println("The size of the square is", thisIsASquare.size)
+	}
+
+## Exercises
+
+Let's write a program to process payments from a few different payment methods.
+
+## Concurrency and Parallelism in Go
+
+## Goroutines
+
+These are the unit of concurrency in Go. Spawning a new goroutine is starting a new thread of concurrent execution.
+
+    import (
+        "fmt"
+        "time"
+    )
+
+    func countToTen(name string) {
+        for i := 0; i < 10; i++ {
+            fmt.Println(name, "-", i)
+            time.Sleep(1 * time.Second)
+        }
+    }
+
+    func main() {
+        go countToTen("foo")
+        go countToTen("bar")
+        time.Sleep(11 * time.Second)
+    }
+
+## Goroutines
+
+Go has support for true parallelism by distributing these goroutines across multiple threads.
+
+But as a result we can't just do operations that might be thread-unsafe. This is a much simplified example of what might go wrong.
+
+    func modifyData(data map[int]int) {
+        for i := 0; i < 10000; i++ {
+            data[0] = i
+        }
+    }
+
+    func main() {
+        data := make(map[int]int)
+        go modifyData(data)
+        go modifyData(data)
+        time.Sleep(2 * time.Second)
+        fmt.Println("done!")
+    }
+
+## Channels
+
+We need a safe way of passing data around without causing issues like that. This is where channels come into play.
+
+> _Don't communicate by sharing memory; share memory by communicating ~ Rob Pike_
+
+Channels provide a safe way to send and receive data across goroutines.
+
+    messages := make(chan string)
+
+    // in some goroutine, we send a message
+    messages <- message
+    
+    // in another goroutine, we receive the mesasge
+    message := <-messages
+
+## Channels
+
+    func readMessages(messages <-chan string) {
+        for m := range messages {
+            fmt.Println("Received message:", m)
+        }
+    }
+
+    func sendMessages(messages chan<- string) {
+        messages <- "Hello, world!"
+        time.Sleep(time.Second)
+        messages <- "Today we are sending and receiving messages with a channel."
+        time.Sleep(time.Second)
+        messages <- "This will be fun!"
+	    close(messages)
+    }
+
+    func main() {
+        messages := make(chan string)
+        go sendMessages(messages)
+        readMessages(messages)
+    }
+
+## Channels
+
+We can use the `select` statement in Go to pull the first result from one or more different channels.
+
+    c1 := make(chan string)
+    c2 := make(chan string)
+
+    select {
+    case msg1 := <-c1:
+        fmt.Println("received from channel 1")
+    case msg1 := <-c2:
+        fmt.Println("received from channel 2")
+    }
+
+## Channels
+
+What happens when we send a value to a channel that no one's receiving on?
+
+**We can't do that.** Or rather, the goroutine trying to send a message will just block until another goroutine chooses to receive from that channel.
+
+This could be quite inconvenient behaviour, since we kind of want the channel to store these values for later use.
+
+We can use **buffered channels** for this purpose.
+
+    messages := make(chan string, 5)
+
+This channel can store 5 messages. The 6th one will still block the goroutine.
+
+## Exercise
+
+Let's write a program to "download" videos concurrently.
+
+But there's a catch! You can only download up to a certain number of videos at the same time, otherwise the program will crash.
+
+Obviously, you shouldn't be downloading them one-by-one either.
